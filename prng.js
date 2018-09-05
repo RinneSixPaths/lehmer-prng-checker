@@ -25,21 +25,20 @@ class PRNG {
 
     /** Return a pseudo-random value between 1 and n */
     next () {
-    // x_k+1 = (g * x_k) % n
+        // x_k+1 = (g * x_k) % n
         return this.seed = this.seed * 16807 % 2147483647
     }
 
     /** Return a pseudo-random floating point number in range [0, 1] */
     nextFloat () {
-    // We know that result of next() will be 1 to 2147483646 (inclusive)
+        // We know that result of next() will be 1 to n (inclusive)
         return (this.next() - 1) / 2147483646
-    }
-
-    /** Return pseudo-random int between 0 and the specified max */
-    nextBoundedInt(min, max) {
-        return Math.floor(this.nextFloat() * (max - min) + min)
     }
 }
 
 const seed = Math.floor(Math.random() * (10 ** 12));
 const randomNumberGenerator = new PRNG(seed);
+const generateAmountOfValues = amountV => {
+    const arrayOfRandomNumbers = new Array(amountV);
+    return arrayOfRandomNumbers.fill(0).map(() => randomNumberGenerator.nextFloat());
+}
