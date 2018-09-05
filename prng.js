@@ -79,3 +79,14 @@ const getAperiodicLength = (arrayOfRandomNumbers = [], periodLength = 1) => {
 
 const aperiodicLength = getAperiodicLength(arrayOfRandomNumbers, periodLength);
 console.log(aperiodicLength);
+
+const printHistogram = (x = []) => {
+    var trace = {
+        x: x,
+        type: 'histogram',
+    };
+    var data = [trace];
+    Plotly.newPlot('myDiv', data);
+}
+
+printHistogram(arrayOfRandomNumbers);
