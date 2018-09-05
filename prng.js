@@ -1,8 +1,8 @@
 class PRNG {
     constructor (seed) {
         
-        this.m = Math.floor(Math.random() * (10 ** 101));
-        this.a = Math.floor(Math.random() * (10 ** 90));
+        this.m = Math.floor(5678911 * (2 ** 32));
+        this.a = Math.floor(5678 * (2 ** 31));
         if (seed % 1 === 0) {
             this.seed = seed % this.m;
             if (this.seed <= 0) {
@@ -22,7 +22,7 @@ class PRNG {
     }
 }
 
-const seed = Math.floor(Math.random() * (10 ** 100));
+const seed = Math.floor(56789 * (2 ** 23));
 const randomNumberGenerator = new PRNG(seed);
 const AMOUNT_OF_RANDOM_NUMBERS = 10000000;
 const generateAmountOfValues = (
@@ -36,12 +36,13 @@ const generateAmountOfValues = (
 }
 
 const getPeriodLength = (Xv = 1, arrayOfRandomNumbers = []) => {
-    const i2 = arrayOfRandomNumbers.findIndex(randomNumber => randomNumber == Xv);
-    arrayOfRandomNumbers.splice((arrayOfRandomNumbers.length - 1), 1);
     const i1 = arrayOfRandomNumbers.findIndex(randomNumber => randomNumber == Xv);
-    console.log(i2);
+    const slicedValue = arrayOfRandomNumbers.splice(i1, 1);
+    const i2 = arrayOfRandomNumbers.findIndex(randomNumber => randomNumber == Xv);
     console.log(i1);
-    return (i2 - i1) || arrayOfRandomNumbers.length;
+    console.log(i2);
+    arrayOfRandomNumbers.push(...slicedValue);
+    return (i2 - i1) >= 0 ? (i2 - i1) : arrayOfRandomNumbers.length + 1;
 }
 
 const arrayOfRandomNumbers = generateAmountOfValues(AMOUNT_OF_RANDOM_NUMBERS, randomNumberGenerator);
