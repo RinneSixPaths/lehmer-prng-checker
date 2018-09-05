@@ -22,9 +22,6 @@ class PRNG {
     }
 }
 
-const seed = Math.floor(56789 * (2 ** 23));
-const randomNumberGenerator = new PRNG(seed);
-const AMOUNT_OF_RANDOM_NUMBERS = 10000000;
 const generateAmountOfValues = (
     amountV = 1,
     randomGenerator = {
@@ -45,15 +42,6 @@ const getPeriodLength = (Xv = 1, arrayOfRandomNumbers = []) => {
     return (i2 - i1) >= 0 ? (i2 - i1) : arrayOfRandomNumbers.length + 1;
 }
 
-const arrayOfRandomNumbers = generateAmountOfValues(AMOUNT_OF_RANDOM_NUMBERS, randomNumberGenerator);
-const Xv = arrayOfRandomNumbers[arrayOfRandomNumbers.length - 1];
-const periodLength = getPeriodLength(
-    Xv,
-    arrayOfRandomNumbers,
-);
-
-console.log(periodLength);
-
 const checkByIndirectEvidence = (amounOfNumbers = 1) => {
     const pairs = [];
     for (let index = 0; index < amounOfNumbers; index++) {
@@ -71,23 +59,57 @@ const checkByIndirectEvidence = (amounOfNumbers = 1) => {
     return isPlaneNumbers;
 }
 
-checkByIndirectEvidence(AMOUNT_OF_RANDOM_NUMBERS);
-
 const getAperiodicLength = (arrayOfRandomNumbers = [], periodLength = 1) => {
-    const minimalIndex = arrayOfRandomNumbers.findIndex(randomValue => randomValue === randomValue + periodLength);
-    return (minimalIndex + 1 + periodLength);
+    let minimalIndex = arrayOfRandomNumbers.findIndex(randomValue => randomValue === randomValue + periodLength);
+    if (!~minimalIndex) {
+        minimalIndex++;
+    }
+    return (minimalIndex + periodLength);
 }
 
-const aperiodicLength = getAperiodicLength(arrayOfRandomNumbers, periodLength);
-console.log(aperiodicLength);
-
-const printHistogram = (x = []) => {
-    var trace = {
-        x: x,
+const printHistogram = (array = []) => {
+    const trace = {
+        x: array,
         type: 'histogram',
+        histnorm: 'probability',
     };
-    var data = [trace];
+    const data = [trace];
     Plotly.newPlot('myDiv', data);
 }
 
-printHistogram(arrayOfRandomNumbers);
+const seed = Math.floor(56789 * (2 ** 23));
+const randomNumberGenerator = new PRNG(seed);
+const AMOUNT_OF_RANDOM_NUMBERS = 10000000;
+const arrayOfRandomNumbers = generateAmountOfValues(AMOUNT_OF_RANDOM_NUMBERS, randomNumberGenerator);
+const Xv = arrayOfRandomNumbers[arrayOfRandomNumbers.length - 1];
+const periodLength = getPeriodLength(Xv, arrayOfRandomNumbers);
+
+console.log(periodLength);
+checkByIndirectEvidence(AMOUNT_OF_RANDOM_NUMBERS);
+const aperiodicLength = getAperiodicLength(arrayOfRandomNumbers, periodLength);
+console.log("Апериодичная длина ", aperiodicLength);
+//printHistogram(arrayOfRandomNumbers);
+//HISTOGRAM COOKING
+const maxRandomNumber = arrayOfRandomNumbers.reduce((prev, curr) => ( prev > curr ? prev : curr ));
+const minRandomNumber = arrayOfRandomNumbers.reduce((prev, curr) => ( prev < curr ? prev : curr ));
+const floatRange = maxRandomNumber - minRandomNumber;
+const INTERVAL_AMOUNT = 20;
+const intervalLength = floatRange / INTERVAL_AMOUNT;
+
+const produceBorderValues = (range = 1, interval = 1) => {
+    const onePiece = range / interval;
+    const borderValues = new Array(interval);
+    return borderValues.fill(0).map((_value, index) => ({
+            min: +(index * onePiece).toFixed(2),
+            max: +((index + 1) * onePiece).toFixed(2),
+        })
+    );
+}
+
+const borderValues = produceBorderValues(1, INTERVAL_AMOUNT);
+const getHitAmount = (range = {}, array = []) => (
+    array.filter(randomValue => randomValue >= range.min && randomValue <= range.max).length
+)
+const hitsAmount = borderValues.map(range => getHitAmount(range, arrayOfRandomNumbers));
+const histogramPoints = hitsAmount.map(amount => amount / AMOUNT_OF_RANDOM_NUMBERS);
+printHistogram(histogramPoints);
