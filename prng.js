@@ -1,15 +1,15 @@
 class PRNG {
     constructor (seed) {
         
-        this.m = Math.floor(5678911 * (2 ** 32));
-        this.a = Math.floor(5678 * (2 ** 31));
+        this.m = +m.value || Math.floor(5678911 * (2 ** 32));
+        this.a = +a.value || Math.floor(5678 * (2 ** 31));
         if (seed % 1 === 0) {
             this.seed = seed % this.m;
             if (this.seed <= 0) {
                 this.seed += this.m;
             }
         } else {
-            throw new Error('Seed value must be an integer.');
+            throw new Error('Initial value must be an integer.');
         }
     }
 
@@ -37,10 +37,10 @@ const getPeriodLength = (Xv = 1, arrayOfRandomNumbers = []) => {
     const slicedValue = arrayOfRandomNumbers.splice(i1, 1);
     const i2 = arrayOfRandomNumbers.findIndex(randomNumber => randomNumber == Xv);
     arrayOfRandomNumbers.push(...slicedValue);
-    return (i2 - i1) >= 0 ? (i2 - i1) : arrayOfRandomNumbers.length + 1;
+    return (i2 - i1) >= 0 ? (i2 - i1) : arrayOfRandomNumbers.length;
 }
 
-const checkByIndirectEvidence = (amounOfNumbers = 1) => {
+const checkByIndirectEvidence = (amounOfNumbers = 1, arrayOfRandomNumbers = []) => {
     const pairs = [];
     for (let index = 0; index < amounOfNumbers; index++) {
         if ((index + 1)%2 === 0) {
@@ -102,25 +102,43 @@ const printHistogram = (array = [], labels = []) => {
     });
 }
 
-const seed = Math.floor(56789 * (2 ** 23));
-const randomNumberGenerator = new PRNG(seed);
-const AMOUNT_OF_RANDOM_NUMBERS = 10000000;
-const arrayOfRandomNumbers = generateAmountOfValues(AMOUNT_OF_RANDOM_NUMBERS, randomNumberGenerator);
-const Xv = arrayOfRandomNumbers[arrayOfRandomNumbers.length - 1];
-const periodLength = getPeriodLength(Xv, arrayOfRandomNumbers);
-const plainNumbers = checkByIndirectEvidence(AMOUNT_OF_RANDOM_NUMBERS);
-const aperiodicLength = getAperiodicLength(arrayOfRandomNumbers, periodLength);
-const maxRandomNumber = arrayOfRandomNumbers.reduce((prev, curr) => ( prev > curr ? prev : curr ));
-const minRandomNumber = arrayOfRandomNumbers.reduce((prev, curr) => ( prev < curr ? prev : curr ));
-const floatRange = maxRandomNumber - minRandomNumber;
-const INTERVAL_AMOUNT = 20;
-const intervalLength = floatRange / INTERVAL_AMOUNT;
-const borderValues = produceBorderValues(1, INTERVAL_AMOUNT);
-const hitsAmount = borderValues.map(range => getHitAmount(range, arrayOfRandomNumbers));
-const histogramPoints = hitsAmount.map(amount => amount / AMOUNT_OF_RANDOM_NUMBERS);
-printHistogram(histogramPoints, hitsAmount);
+function compute() {
+    const seed = +r0.value || Math.floor(56789 * (2 ** 23));
+    const randomNumberGenerator = new PRNG(seed);
+    const AMOUNT_OF_RANDOM_NUMBERS = 10000000;
+    const arrayOfRandomNumbers = generateAmountOfValues(AMOUNT_OF_RANDOM_NUMBERS, randomNumberGenerator);
+    const Xv = arrayOfRandomNumbers[arrayOfRandomNumbers.length - 1];
+    const periodLength = getPeriodLength(Xv, arrayOfRandomNumbers);
+    const plainNumbers = checkByIndirectEvidence(AMOUNT_OF_RANDOM_NUMBERS, arrayOfRandomNumbers);
+    const aperiodicLength = getAperiodicLength(arrayOfRandomNumbers, periodLength);
+    const maxRandomNumber = arrayOfRandomNumbers.reduce((prev, curr) => ( prev > curr ? prev : curr ));
+    const minRandomNumber = arrayOfRandomNumbers.reduce((prev, curr) => ( prev < curr ? prev : curr ));
+    const floatRange = maxRandomNumber - minRandomNumber;
+    const INTERVAL_AMOUNT = 20;
+    const intervalLength = floatRange / INTERVAL_AMOUNT;
+    const borderValues = produceBorderValues(1, INTERVAL_AMOUNT);
+    const hitsAmount = borderValues.map(range => getHitAmount(range, arrayOfRandomNumbers));
+    const histogramPoints = hitsAmount.map(amount => amount / AMOUNT_OF_RANDOM_NUMBERS);
+    printHistogram(histogramPoints, hitsAmount);
 
-console.log("Косвенное проверочное отношение ", plainNumbers);
-console.log("п / 4", Math.PI / 4);
-console.log("Периодичная длина ", periodLength);
-console.log("Апериодичная длина ", aperiodicLength);
+    /*Logger part*/
+    console.clear();
+    console.log("Косвенное проверочное отношение ", plainNumbers);
+    console.log("п / 4", Math.PI / 4);
+    console.log("Периодичная длина ", periodLength);
+    console.log("Апериодичная длина ", aperiodicLength);
+
+    /*Accessable values*/
+    window.seed = seed;
+    window.arrayOfRandomNumbers = arrayOfRandomNumbers;
+    window.periodLength = periodLength;
+    window.plainNumbers = plainNumbers;
+    window.aperiodicLength = aperiodicLength;
+    window.maxRandomNumber = maxRandomNumber;
+    window.minRandomNumber = minRandomNumber;
+    window.floatRange = floatRange;
+    window.intervalLength = intervalLength;
+    window.borderValues = borderValues;
+    window.hitsAmount = hitsAmount;
+    window.histogramPoints = histogramPoints;
+}

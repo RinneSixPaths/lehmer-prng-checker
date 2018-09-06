@@ -4,13 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
     <title>Document</title>
 </head>
 <body>
-    <div id="myDiv"></div>
     <canvas id="myChart" width="400px" height="200px"></canvas>
+    <br>
+    a: <input type="text" id="a">
+    R0: <input type="text" id="r0">
+    m: <input type="text" id="m">
+    <button id="compute" onclick="compute()">Compute</button>
     <script src="prng.js"></script>
 </body>
 </html>
