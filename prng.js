@@ -77,8 +77,18 @@ const getHitAmount = (range = {}, array = []) => (
     array.filter(randomValue => randomValue >= range.min && randomValue <= range.max).length
 )
 
+const getExpectedValue = (arr = [], amount = 1) => (
+    arr.reduce((prev, curr) => prev + curr, 0) / amount
+)
+
+const getDispersion = (arr = [], amount = 1, expectedvalue = 1) => (
+    arr.reduce((prev, curr) => (prev - expectedvalue) ** 2 + (curr - expectedvalue) ** 2, 0) / (amount - 1)
+)
+
 const printHistogram = (array = [], labels = []) => {
-    const ctx = document.getElementById("myChart").getContext('2d');
+    const canvas = document.getElementById("myChart");
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     const myChart = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -119,14 +129,21 @@ function compute() {
     const borderValues = produceBorderValues(1, INTERVAL_AMOUNT);
     const hitsAmount = borderValues.map(range => getHitAmount(range, arrayOfRandomNumbers));
     const histogramPoints = hitsAmount.map(amount => amount / AMOUNT_OF_RANDOM_NUMBERS);
+    const expectedvalue = getExpectedValue(arrayOfRandomNumbers, AMOUNT_OF_RANDOM_NUMBERS);
+    const dispersion = getDispersion(arrayOfRandomNumbers, AMOUNT_OF_RANDOM_NUMBERS, expectedvalue);
+    const meanSquareDeviation = Math.sqrt(dispersion);
+
     printHistogram(histogramPoints, hitsAmount);
 
     /*Logger part*/
     console.clear();
     console.log("Косвенное проверочное отношение ", plainNumbers);
     console.log("п / 4", Math.PI / 4);
-    console.log("Периодичная длина ", periodLength);
-    console.log("Апериодичная длина ", aperiodicLength);
+    console.log("Длина периода ", periodLength);
+    console.log("Длина апериодичности ", aperiodicLength);
+    console.log("Математическое ожидание ", expectedvalue);
+    console.log("Дисперсия ", dispersion);
+    console.log("Среднее квадратичное отклонение ", meanSquareDeviation);
 
     /*Accessable values*/
     window.seed = seed;
@@ -141,4 +158,7 @@ function compute() {
     window.borderValues = borderValues;
     window.hitsAmount = hitsAmount;
     window.histogramPoints = histogramPoints;
+    window.expectedvalue = expectedvalue;
+    window.dispersion = dispersion;
+    window.meanSquareDeviation = meanSquareDeviation;
 }
