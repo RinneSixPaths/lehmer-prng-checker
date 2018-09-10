@@ -18,7 +18,7 @@ class PRNG {
     }
 
     nextFloat () {
-        return (this.next() - 1) / this.m;
+        return (this.next()) / this.m;
     }
 }
 
@@ -35,8 +35,10 @@ const generateAmountOfValues = (
 const getPeriodLength = (Xv = 1, arrayOfRandomNumbers = []) => {
     const i1 = arrayOfRandomNumbers.findIndex(randomNumber => randomNumber == Xv);
     const slicedValue = arrayOfRandomNumbers.splice(i1, 1);
-    const i2 = arrayOfRandomNumbers.findIndex(randomNumber => randomNumber == Xv);
-    arrayOfRandomNumbers.push(...slicedValue);
+    const i2 = arrayOfRandomNumbers.findIndex(randomNumber => randomNumber == Xv) + 1;
+    console.log(i1);
+    console.log(i2);
+    arrayOfRandomNumbers.splice(i1, 0, ...slicedValue);
     return (i2 - i1) >= 0 ? (i2 - i1) : arrayOfRandomNumbers.length;
 }
 
@@ -74,7 +76,7 @@ const produceBorderValues = (range = 1, interval = 1) => {
 }
 
 const getHitAmount = (range = {}, array = []) => (
-    array.filter(randomValue => randomValue >= range.min && randomValue <= range.max).length
+    array.filter(randomValue => randomValue >= range.min && randomValue < range.max).length
 )
 
 const getExpectedValue = (arr = [], amount = 1) => (
@@ -118,6 +120,7 @@ function compute() {
     const AMOUNT_OF_RANDOM_NUMBERS = 10000000;
     const arrayOfRandomNumbers = generateAmountOfValues(AMOUNT_OF_RANDOM_NUMBERS, randomNumberGenerator);
     const Xv = arrayOfRandomNumbers[arrayOfRandomNumbers.length - 1];
+    
     const periodLength = getPeriodLength(Xv, arrayOfRandomNumbers);
     const plainNumbers = checkByIndirectEvidence(AMOUNT_OF_RANDOM_NUMBERS, arrayOfRandomNumbers);
     const aperiodicLength = getAperiodicLength(arrayOfRandomNumbers, periodLength);
